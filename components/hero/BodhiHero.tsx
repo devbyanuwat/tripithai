@@ -72,7 +72,9 @@ export function BodhiHero({ children }: { children: React.ReactNode }) {
         alt="ต้นพระศรีมหาโพธิ์ — TripiThai"
         fill
         priority
+        fetchPriority="high"
         sizes="(min-width: 1024px) 1024px, 100vw"
+        quality={85}
         className="object-cover"
       />
       {enable3D && (
