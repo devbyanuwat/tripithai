@@ -28,17 +28,20 @@ function stripMarkdown(s: string): string {
 const RATES = [0.85, 1.0, 1.15, 1.3] as const
 
 export function ListenButton({ text, title }: Props) {
-  const [supported, setSupported] = useState(false)
+  // Optimistic: render the button on SSR + first paint. Detect support in
+  // useEffect; the button gracefully disables itself if the API is missing.
+  const [unsupported, setUnsupported] = useState(false)
   const [state, setState] = useState<'idle' | 'playing' | 'paused'>('idle')
   const [rateIdx, setRateIdx] = useState(1)
   const utterRef = useRef<SpeechSynthesisUtterance | null>(null)
 
   useEffect(() => {
-    setSupported(typeof window !== 'undefined' && 'speechSynthesis' in window)
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      setUnsupported(true)
+      return
+    }
     return () => {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel()
-      }
+      window.speechSynthesis.cancel()
     }
   }, [])
 
@@ -86,16 +89,16 @@ export function ListenButton({ text, title }: Props) {
     }
   }
 
-  if (!supported) return null
-
   return (
     <div className="inline-flex items-center gap-1 bg-stone-100 border border-stone-200 rounded-full p-0.5 text-sm">
       {state === 'idle' && (
         <button
           type="button"
           onClick={start}
-          className="flex items-center gap-1.5 px-3 py-1 rounded-full hover:bg-amber-50 hover:text-amber-700 transition-colors"
-          aria-label="ฟังเสียงอ่าน"
+          disabled={unsupported}
+          className="flex items-center gap-1.5 px-3 py-1 rounded-full hover:bg-amber-50 hover:text-amber-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-stone-500"
+          aria-label={unsupported ? 'เบราว์เซอร์นี้ไม่รองรับการอ่านออกเสียง' : 'ฟังเสียงอ่าน'}
+          title={unsupported ? 'เบราว์เซอร์นี้ไม่รองรับการอ่านออกเสียง' : undefined}
         >
           <Play className="w-3.5 h-3.5" />
           ฟัง
