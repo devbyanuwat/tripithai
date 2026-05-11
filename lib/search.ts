@@ -87,15 +87,30 @@ export async function searchDocs(
     const terms = tokens.length > 0 ? tokens : [q]
     const includeWholeQuery = tokens.length > 1
 
+    // Thai has no word boundaries, so also check if a doc's title/tag is a substring
+    // of the query itself. Handles queries like "ไตรลักษณ์คืออะไร" where "ไตรลักษณ์"
+    // sits inside the unsplittable string.
+    const qLower = q.toLowerCase()
+
     const scored = docs
       .map((doc) => {
         const title = doc.frontmatter.title ?? ''
         const ref = doc.frontmatter.ref ?? ''
         const desc = doc.frontmatter.description ?? ''
-        const tags = (doc.frontmatter.tags ?? []).join(' ')
+        const tagsArr = doc.frontmatter.tags ?? []
+        const tags = tagsArr.join(' ')
         const content = doc.content
 
         let score = 0
+
+        if (title.length >= 2 && qLower.includes(title.toLowerCase())) {
+          score += 500
+        }
+        for (const tag of tagsArr) {
+          if (tag.length >= 2 && qLower.includes(tag.toLowerCase())) {
+            score += 80
+          }
+        }
 
         if (includeWholeQuery) {
           score +=
