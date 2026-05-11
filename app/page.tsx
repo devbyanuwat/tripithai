@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Search, MessageCircle, BookOpen, ChevronRight } from 'lucide-react'
 import { SearchBar } from '@/components/search/SearchBar'
+import { BodhiHero } from '@/components/hero/BodhiHero'
 
 const FEATURED = [
   { title: 'อริยสัจ ๔', slug: 'suttanta/digha/ariyasacca', desc: 'หัวใจของพระพุทธศาสนา' },
@@ -26,16 +27,19 @@ export default function Home() {
     <div className="max-w-5xl mx-auto px-4 py-10 space-y-12">
 
       {/* Hero */}
-      <div className="text-center space-y-4">
-        <div className="text-4xl">🪷</div>
-        <h1 className="text-3xl font-semibold text-stone-800">TripiThai</h1>
-        <p className="text-stone-500 text-lg max-w-xl mx-auto">
-          ค้นหาและเรียนรู้พระไตรปิฎก — ค้นหาด้วย keyword, ถาม-ตอบด้วย AI, หรืออ่านแบบ Wiki
-        </p>
-        <div className="max-w-2xl mx-auto">
-          <SearchBar size="lg" />
+      <BodhiHero>
+        <div className="w-full space-y-3 text-center sm:space-y-4">
+          <h1 className="text-3xl font-semibold text-stone-800 drop-shadow-sm sm:text-4xl">
+            TripiThai
+          </h1>
+          <p className="mx-auto max-w-xl text-stone-600 sm:text-lg">
+            ค้นหาและเรียนรู้พระไตรปิฎก — ค้นหาด้วย keyword, ถาม-ตอบด้วย AI, หรืออ่านแบบ Wiki
+          </p>
+          <div className="mx-auto max-w-2xl">
+            <SearchBar size="lg" />
+          </div>
         </div>
-      </div>
+      </BodhiHero>
 
       {/* Feature cards */}
       <div className="grid grid-cols-3 gap-4">
