@@ -2,7 +2,7 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --font-sans: "Sarabun", "Noto Sans Thai", system-ui, sans-serif;
+  --font-sans: var(--font-sarabun), "Sarabun", "Noto Sans Thai", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
   --color-brand-50: #fdf8f0;

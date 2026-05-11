@@ -1,6 +1,14 @@
 import type { Metadata } from 'next'
+import { Sarabun } from 'next/font/google'
 import './globals.css'
 import { AppLayout } from '@/components/layouts'
+
+const sarabun = Sarabun({
+  subsets: ['thai', 'latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-sarabun',
+})
 import {
   SITE_URL,
   SITE_NAME,
@@ -83,16 +91,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="th" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="bg-stone-50 text-stone-900 min-h-screen">
+    <html lang="th" className={sarabun.variable} suppressHydrationWarning>
+      <body className="bg-stone-50 text-stone-900 min-h-screen font-sans">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

@@ -44,7 +44,7 @@ function tryLoadTexture(url: string): Promise<THREE.Texture | null> {
   })
 }
 
-function BodhiPlane() {
+function BodhiPlane({ onReady }: { onReady?: () => void }) {
   const colorMap = useLoader(THREE.TextureLoader, '/hero/bodhi.webp')
   const [depthMap, setDepthMap] = useState<THREE.Texture | null>(null)
   const meshRef = useRef<THREE.Mesh>(null)
@@ -54,6 +54,8 @@ function BodhiPlane() {
 
   useEffect(() => {
     tryLoadTexture('/hero/bodhi-depth.png').then(setDepthMap)
+    onReady?.()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const uniforms = useMemo(
@@ -103,7 +105,7 @@ function BodhiPlane() {
 
   return (
     <mesh ref={meshRef} scale={[Math.max(1, aspect / (16 / 9)), 1, 1]}>
-      <planeGeometry args={[planeWidth, planeHeight, 200, 120]} />
+      <planeGeometry args={[planeWidth, planeHeight, 100, 60]} />
       <shaderMaterial
         vertexShader={VERTEX}
         fragmentShader={FRAGMENT}
@@ -114,15 +116,16 @@ function BodhiPlane() {
   )
 }
 
-export function BodhiScene() {
+export function BodhiScene({ onReady }: { onReady?: () => void } = {}) {
   return (
     <Canvas
       camera={{ position: [0, 0, 2.8], fov: 45 }}
-      dpr={[1, 2]}
-      gl={{ antialias: true }}
+      dpr={[1, 1.5]}
+      gl={{ antialias: true, powerPreference: 'low-power' }}
+      frameloop="always"
       style={{ position: 'absolute', inset: 0 }}
     >
-      <BodhiPlane />
+      <BodhiPlane onReady={onReady} />
     </Canvas>
   )
 }
