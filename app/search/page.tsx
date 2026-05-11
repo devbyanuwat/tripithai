@@ -129,7 +129,7 @@ function SearchResults() {
   )
 }
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams()
   const q = searchParams.get('q') ?? ''
 
@@ -138,9 +138,15 @@ export default function SearchPage() {
       <div className="mb-6">
         <SearchBar defaultValue={q} size="lg" />
       </div>
-      <Suspense>
-        <SearchResults />
-      </Suspense>
+      <SearchResults />
     </div>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense>
+      <SearchPageContent />
+    </Suspense>
   )
 }
