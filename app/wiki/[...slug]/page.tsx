@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { getDocBySlug, getDocsByPrefix, getRelatedDocs, isKnownFolder } from '@/lib/mdx'
 import { buildEtipitakaUrl } from '@/lib/etipitaka'
 import { MDXRemote } from 'next-mdx-remote/rsc'
+import remarkGfm from 'remark-gfm'
 import Link from 'next/link'
 import { BookOpen, Tag, ChevronRight, ExternalLink, Library } from 'lucide-react'
 import { ListenButton } from '@/components/wiki/ListenButton'
@@ -126,7 +127,10 @@ export default async function WikiPage({ params }: Props) {
             prose-code:bg-stone-100 prose-code:rounded prose-code:px-1
             prose-strong:text-stone-800
           ">
-            <MDXRemote source={doc.content} />
+            <MDXRemote
+              source={doc.content}
+              options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
+            />
           </div>
         </article>
 
