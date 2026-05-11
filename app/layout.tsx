@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { Sidebar } from '@/components/ui/Sidebar'
 import { Header } from '@/components/ui/Header'
+// import { MascotCompanion } from '@/components/mascot/MascotCompanion' // paused — see issue #2
 
 export const metadata: Metadata = {
   title: { default: 'TripiThai', template: '%s | TripiThai' },
