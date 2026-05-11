@@ -13,6 +13,7 @@ export interface DocFrontmatter {
   related?: string[]    // slug ของหัวข้อที่เกี่ยวข้อง
   description?: string
   etipitaka?: string    // override URL ตรงไปที่ etipitaka.com (ถ้าไม่ใส่ จะ derive จาก ref)
+  watnapp?: string      // URL ไปยังหนังสือพุทธวจน บน watnapp.com
 }
 
 export interface Doc {

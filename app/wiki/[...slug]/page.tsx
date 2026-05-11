@@ -3,7 +3,7 @@ import { getDocBySlug, getRelatedDocs } from '@/lib/mdx'
 import { buildEtipitakaUrl } from '@/lib/etipitaka'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import Link from 'next/link'
-import { BookOpen, Tag, ChevronRight, ExternalLink } from 'lucide-react'
+import { BookOpen, Tag, ChevronRight, ExternalLink, Library } from 'lucide-react'
 import { ListenButton } from '@/components/wiki/ListenButton'
 import type { Metadata } from 'next'
 
@@ -75,6 +75,18 @@ export default async function WikiPage({ params }: Props) {
                     <span>{doc.frontmatter.ref}</span>
                   </div>
                 )
+              )}
+              {doc.frontmatter.watnapp && (
+                <a
+                  href={doc.frontmatter.watnapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 hover:border-emerald-400 hover:bg-emerald-100 rounded-lg px-3 py-2 transition-colors"
+                >
+                  <Library className="w-4 h-4 shrink-0" />
+                  <span>พุทธวจน</span>
+                  <ExternalLink className="w-3 h-3 opacity-50 group-hover:opacity-100" />
+                </a>
               )}
               <ListenButton text={doc.content} title={doc.frontmatter.title} />
             </div>
