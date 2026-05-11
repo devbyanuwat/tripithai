@@ -1,8 +1,10 @@
 import { notFound } from 'next/navigation'
 import { getDocBySlug, getRelatedDocs } from '@/lib/mdx'
+import { buildEtipitakaUrl } from '@/lib/etipitaka'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import Link from 'next/link'
-import { BookOpen, Tag, ChevronRight } from 'lucide-react'
+import { BookOpen, Tag, ChevronRight, ExternalLink } from 'lucide-react'
+import { ListenButton } from '@/components/wiki/ListenButton'
 import type { Metadata } from 'next'
 
 interface Props {
@@ -25,6 +27,7 @@ export default async function WikiPage({ params }: Props) {
   if (!doc) notFound()
 
   const related = getRelatedDocs(doc)
+  const etipitakaUrl = buildEtipitakaUrl(doc.frontmatter.ref, doc.frontmatter.etipitaka)
   const breadcrumbs = slug.map((s, i) => ({
     label: s,
     href: '/wiki/' + slug.slice(0, i + 1).join('/'),
@@ -53,12 +56,28 @@ export default async function WikiPage({ params }: Props) {
             <h1 className="text-2xl font-semibold text-stone-800 mb-3">
               {doc.frontmatter.title}
             </h1>
-            {doc.frontmatter.ref && (
-              <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 w-fit">
-                <BookOpen className="w-4 h-4 shrink-0" />
-                <span>{doc.frontmatter.ref}</span>
-              </div>
-            )}
+            <div className="flex flex-wrap items-center gap-2">
+              {doc.frontmatter.ref && (
+                etipitakaUrl ? (
+                  <a
+                    href={etipitakaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 hover:border-amber-400 hover:bg-amber-100 rounded-lg px-3 py-2 w-fit transition-colors"
+                  >
+                    <BookOpen className="w-4 h-4 shrink-0" />
+                    <span>{doc.frontmatter.ref}</span>
+                    <ExternalLink className="w-3 h-3 opacity-50 group-hover:opacity-100" />
+                  </a>
+                ) : (
+                  <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 w-fit">
+                    <BookOpen className="w-4 h-4 shrink-0" />
+                    <span>{doc.frontmatter.ref}</span>
+                  </div>
+                )
+              )}
+              <ListenButton text={doc.content} title={doc.frontmatter.title} />
+            </div>
             {doc.frontmatter.tags?.length ? (
               <div className="flex flex-wrap gap-1.5 mt-3">
                 {doc.frontmatter.tags.map((tag) => (

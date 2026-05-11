@@ -12,6 +12,7 @@ export interface DocFrontmatter {
   tags?: string[]
   related?: string[]    // slug ของหัวข้อที่เกี่ยวข้อง
   description?: string
+  etipitaka?: string    // override URL ตรงไปที่ etipitaka.com (ถ้าไม่ใส่ จะ derive จาก ref)
 }
 
 export interface Doc {
