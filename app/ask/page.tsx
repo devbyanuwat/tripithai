@@ -2,6 +2,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { Send, AlertCircle, BookOpen, Loader2, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { cn } from '@/lib/utils'
 
 interface Message {
@@ -111,8 +113,10 @@ export default function AskPage() {
 
                   {/* AI answer */}
                   {msg.content && (
-                    <div className="bg-white border border-stone-200 px-4 py-3 rounded-2xl rounded-tl-sm text-sm text-stone-700 whitespace-pre-wrap leading-relaxed">
-                      {msg.content}
+                    <div className="bg-white border border-stone-200 px-4 py-3 rounded-2xl rounded-tl-sm text-sm text-stone-700 leading-relaxed prose prose-sm prose-stone max-w-none prose-p:my-2 prose-headings:font-semibold prose-h2:text-base prose-h3:text-sm prose-strong:text-stone-800 prose-blockquote:border-amber-300 prose-blockquote:bg-amber-50 prose-blockquote:my-2 prose-blockquote:py-0.5 prose-blockquote:rounded-r-md prose-ul:my-2 prose-ol:my-2 prose-li:my-0.5">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {msg.content}
+                      </ReactMarkdown>
                     </div>
                   )}
 
