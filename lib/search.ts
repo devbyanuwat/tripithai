@@ -51,6 +51,20 @@ function countMatches(text: string, query: string): number {
   return matches ? matches.length : 0
 }
 
+// Tokenize: split by whitespace + drop stop-ish particles. Substring match
+// handles within-token cases (Thai compound words still match).
+const STOPWORDS = new Set([
+  'คือ', 'อะไร', 'คืออะไร', 'และ', 'หรือ', 'ของ', 'ที่', 'แบบ', 'ไหน',
+  'อย่างไร', 'ทำไม', 'เป็น', 'มี', 'ได้', 'ไหม', 'ค่ะ', 'ครับ', 'ๆ',
+])
+
+function tokenize(query: string): string[] {
+  return query
+    .trim()
+    .split(/\s+/)
+    .filter((t) => t.length > 0 && !STOPWORDS.has(t))
+}
+
 export async function searchDocs(
   query: string,
   options?: { limit?: number; offset?: number; filter?: string }
@@ -61,13 +75,17 @@ export async function searchDocs(
 
     let docs = getDocs()
 
-    // Filter: e.g. 'nikaya = "suttanta"'
     if (options?.filter) {
       const m = options.filter.match(/nikaya\s*=\s*"([^"]+)"/)
       if (m) docs = docs.filter((d) => d.frontmatter.nikaya === m[1])
     }
 
-    const lowerQ = q.toLowerCase()
+    // Token-level scoring: whole-query substring is a strong signal (exact phrase),
+    // each remaining token adds incremental score. Falls back to whole-query if all
+    // tokens get filtered as stopwords.
+    const tokens = tokenize(q)
+    const terms = tokens.length > 0 ? tokens : [q]
+    const includeWholeQuery = tokens.length > 1
 
     const scored = docs
       .map((doc) => {
@@ -75,19 +93,24 @@ export async function searchDocs(
         const ref = doc.frontmatter.ref ?? ''
         const desc = doc.frontmatter.description ?? ''
         const tags = (doc.frontmatter.tags ?? []).join(' ')
+        const content = doc.content
 
-        const titleMatches = countMatches(title, q)
-        const refMatches = countMatches(ref, q)
-        const descMatches = countMatches(desc, q)
-        const tagMatches = countMatches(tags, q)
-        const contentMatches = countMatches(doc.content, q)
+        let score = 0
 
-        const score =
-          titleMatches * 100 +
-          tagMatches * 50 +
-          refMatches * 30 +
-          descMatches * 20 +
-          contentMatches * 5
+        if (includeWholeQuery) {
+          score +=
+            countMatches(title, q) * 200 +
+            countMatches(content, q) * 20
+        }
+
+        for (const term of terms) {
+          score +=
+            countMatches(title, term) * 100 +
+            countMatches(tags, term) * 50 +
+            countMatches(ref, term) * 30 +
+            countMatches(desc, term) * 20 +
+            countMatches(content, term) * 5
+        }
 
         return { doc, score }
       })
@@ -99,20 +122,26 @@ export async function searchDocs(
     const limit = options?.limit ?? 20
     const paginated = scored.slice(offset, offset + limit)
 
-    const hits: SearchHit[] = paginated.map(({ doc }) => ({
-      id: doc.slug.replace(/\//g, '-'),
-      slug: doc.slug,
-      title: doc.frontmatter.title,
-      description: doc.frontmatter.description,
-      content: doc.content,
-      ref: doc.frontmatter.ref,
-      nikaya: doc.frontmatter.nikaya,
-      tags: doc.frontmatter.tags,
-      _formatted: {
-        title: highlight(doc.frontmatter.title, q),
-        content: makeSnippet(doc.content, q),
-      },
-    }))
+    // Highlight the strongest term per doc (first that appears in title, else first token)
+    const hits: SearchHit[] = paginated.map(({ doc }) => {
+      const highlightTerm =
+        terms.find((t) => doc.frontmatter.title?.toLowerCase().includes(t.toLowerCase())) ??
+        terms[0]
+      return {
+        id: doc.slug.replace(/\//g, '-'),
+        slug: doc.slug,
+        title: doc.frontmatter.title,
+        description: doc.frontmatter.description,
+        content: doc.content,
+        ref: doc.frontmatter.ref,
+        nikaya: doc.frontmatter.nikaya,
+        tags: doc.frontmatter.tags,
+        _formatted: {
+          title: highlight(doc.frontmatter.title, highlightTerm),
+          content: makeSnippet(doc.content, highlightTerm),
+        },
+      }
+    })
 
     return { hits, total, ok: true, fallback: false }
   } catch (err) {
