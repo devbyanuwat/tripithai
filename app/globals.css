@@ -1,0 +1,42 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --font-sans: "Sarabun", "Noto Sans Thai", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-brand-50: #fdf8f0;
+  --color-brand-100: #faeeda;
+  --color-brand-200: #f5d9a8;
+  --color-brand-300: #efbe6e;
+  --color-brand-400: #e8a03a;
+  --color-brand-500: --color-amber-600;
+  --color-brand-600: #854f0b;
+  --color-brand-700: #633806;
+  --color-brand-800: #412402;
+  --color-brand-900: #1f1001;
+
+  --color-dhamma-green: #3b6d11;
+  --color-dhamma-amber: #854f0b;
+  --color-dhamma-blue: #185fa5;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :root {
+    --sidebar-width: 260px;
+  }
+}
+
+/* Fade-in animation for page transitions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
