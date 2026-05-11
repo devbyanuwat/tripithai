@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { searchDocs } from '@/lib/meilisearch'
+import { searchDocs } from '@/lib/search'
 import { askTyphoon } from '@/lib/typhoon'
 
 export async function POST(req: NextRequest) {

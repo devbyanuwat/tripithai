@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { searchDocs } from '@/lib/meilisearch'
+import { searchDocs } from '@/lib/search'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
