@@ -4,11 +4,11 @@ import { SearchBar } from '@/components/search/SearchBar'
 
 const FEATURED = [
   { title: 'อริยสัจ ๔', slug: 'suttanta/digha/ariyasacca', desc: 'หัวใจของพระพุทธศาสนา' },
+  { title: 'ไตรลักษณ์', slug: 'suttanta/samyutta/tilakkhana', desc: 'อนิจจัง ทุกขัง อนัตตา' },
+  { title: 'มรรค ๘', slug: 'suttanta/samyutta/magga', desc: 'ทางสายกลางสู่นิพพาน' },
   { title: 'อานาปานสติ', slug: 'suttanta/majjhima/anapanasati', desc: 'การเจริญสติด้วยลมหายใจ' },
-  { title: 'กสิณ ๑๐', slug: 'suttanta/anguttara/kasina', desc: 'กรรมฐานแบบเพ่ง' },
-  { title: 'ภพภูมิ ๓๑', slug: 'suttanta/anguttara/bhumi', desc: 'โลกและสรรพสัตว์ในสังสารวัฏ' },
-  { title: 'โพชฌงค์ ๗', slug: 'suttanta/samyutta/bojjhanga', desc: 'องค์แห่งการตรัสรู้' },
-  { title: 'นิวรณ์ ๕', slug: 'suttanta/anguttara/nivarana', desc: 'สิ่งกั้นจิตไม่ให้สงบ' },
+  { title: 'สติปัฏฐาน ๔', slug: 'suttanta/digha/satipatthana', desc: 'ทางเอกแห่งการดับทุกข์' },
+  { title: 'กาลามสูตร', slug: 'suttanta/anguttara/kalama', desc: 'วิธีพิจารณาก่อนเชื่อ' },
 ]
 
 const NIKAYA = [

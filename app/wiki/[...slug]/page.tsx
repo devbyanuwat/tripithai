@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation'
-import { getDocBySlug, getRelatedDocs } from '@/lib/mdx'
+import { getDocBySlug, getDocsByPrefix, getRelatedDocs, isKnownFolder } from '@/lib/mdx'
 import { buildEtipitakaUrl } from '@/lib/etipitaka'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import Link from 'next/link'
 import { BookOpen, Tag, ChevronRight, ExternalLink, Library } from 'lucide-react'
 import { ListenButton } from '@/components/wiki/ListenButton'
+import { FolderIndex } from '@/components/wiki/FolderIndex'
 import type { Metadata } from 'next'
 
 interface Props {
@@ -23,8 +24,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function WikiPage({ params }: Props) {
   const { slug } = await params
-  const doc = getDocBySlug(slug.join('/'))
-  if (!doc) notFound()
+  const path = slug.join('/')
+  const doc = getDocBySlug(path)
+
+  if (!doc) {
+    const folderDocs = getDocsByPrefix(path)
+    if (folderDocs.length > 0 || isKnownFolder(path)) {
+      return <FolderIndex prefix={path} docs={folderDocs} />
+    }
+    notFound()
+  }
 
   const related = getRelatedDocs(doc)
   const etipitakaUrl = buildEtipitakaUrl(doc.frontmatter.ref, doc.frontmatter.etipitaka)
