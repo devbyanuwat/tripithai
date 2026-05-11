@@ -8,7 +8,7 @@ const BodhiScene = dynamic(() => import('./BodhiScene').then((m) => m.BodhiScene
   loading: () => (
     <div
       className="absolute inset-0 bg-cover bg-center"
-      style={{ backgroundImage: 'url(/hero/bodhi.jpg)' }}
+      style={{ backgroundImage: 'url(/hero/bodhi.webp)' }}
       aria-hidden="true"
     />
   ),
@@ -36,7 +36,7 @@ export function BodhiHero({ children }: { children: React.ReactNode }) {
       {reducedMotion ? (
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: 'url(/hero/bodhi.jpg)' }}
+          style={{ backgroundImage: 'url(/hero/bodhi.webp)' }}
           aria-hidden="true"
         />
       ) : (
@@ -44,7 +44,7 @@ export function BodhiHero({ children }: { children: React.ReactNode }) {
           fallback={
             <div
               className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: 'url(/hero/bodhi.jpg)' }}
+              style={{ backgroundImage: 'url(/hero/bodhi.webp)' }}
               aria-hidden="true"
             />
           }

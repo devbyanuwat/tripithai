@@ -45,7 +45,7 @@ function tryLoadTexture(url: string): Promise<THREE.Texture | null> {
 }
 
 function BodhiPlane() {
-  const colorMap = useLoader(THREE.TextureLoader, '/hero/bodhi.jpg')
+  const colorMap = useLoader(THREE.TextureLoader, '/hero/bodhi.webp')
   const [depthMap, setDepthMap] = useState<THREE.Texture | null>(null)
   const meshRef = useRef<THREE.Mesh>(null)
   const targetMouse = useRef(new THREE.Vector2(0, 0))

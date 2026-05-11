@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { BookOpen, Tag, ChevronRight, ExternalLink, Library } from 'lucide-react'
 import { ListenButton } from '@/components/wiki/ListenButton'
 import { FolderIndex } from '@/components/wiki/FolderIndex'
+import { SITE_URL, SITE_NAME, OG_IMAGE, OG_IMAGE_WIDTH, OG_IMAGE_HEIGHT } from '@/lib/site'
 import type { Metadata } from 'next'
 
 interface Props {
@@ -15,11 +16,43 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const doc = getDocBySlug(slug.join('/'))
-  if (!doc) return {}
+  const path = slug.join('/')
+  const doc = getDocBySlug(path)
+  if (!doc) return { title: 'ไม่พบหัวข้อ' }
+
+  const url = `${SITE_URL}/wiki/${path}`
+  const title = doc.frontmatter.title
+  const description =
+    doc.frontmatter.description ??
+    (doc.frontmatter.ref ? `อ้างอิงจาก ${doc.frontmatter.ref}` : `หัวข้อ${title}ในพระไตรปิฎก`)
+
   return {
-    title: doc.frontmatter.title,
-    description: doc.frontmatter.description,
+    title,
+    description,
+    keywords: doc.frontmatter.tags,
+    alternates: { canonical: url },
+    openGraph: {
+      type: 'article',
+      url,
+      title,
+      description,
+      siteName: SITE_NAME,
+      images: [
+        {
+          url: OG_IMAGE,
+          width: OG_IMAGE_WIDTH,
+          height: OG_IMAGE_HEIGHT,
+          alt: title,
+          type: 'image/webp',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [OG_IMAGE],
+    },
   }
 }
 
@@ -43,8 +76,29 @@ export default async function WikiPage({ params }: Props) {
     href: '/wiki/' + slug.slice(0, i + 1).join('/'),
   }))
 
+  const articleUrl = `${SITE_URL}/wiki/${path}`
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: doc.frontmatter.title,
+    description: doc.frontmatter.description,
+    inLanguage: 'th',
+    keywords: doc.frontmatter.tags?.join(', '),
+    isAccessibleForFree: true,
+    isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL },
+    url: articleUrl,
+    mainEntityOfPage: articleUrl,
+    citation: doc.frontmatter.ref,
+    image: `${SITE_URL}${OG_IMAGE}`,
+    publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1 text-xs text-stone-400 mb-6">
         <Link href="/wiki" className="hover:text-stone-600">Wiki</Link>
