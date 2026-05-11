@@ -68,22 +68,7 @@ export function getDocsByPrefix(prefix: string): Doc[] {
   return getAllDocs().filter((d) => d.slug === p || d.slug.startsWith(p + '/'))
 }
 
-// Known structural folders — render an index even when empty so users see the
-// hierarchy rather than 404. Update when new piṭakas/nikāyas come online.
-export const KNOWN_FOLDERS = new Set([
-  'vinaya',
-  'suttanta',
-  'suttanta/digha',
-  'suttanta/majjhima',
-  'suttanta/samyutta',
-  'suttanta/anguttara',
-  'suttanta/khuddaka',
-  'abhidhamma',
-])
-
-export function isKnownFolder(path: string): boolean {
-  return KNOWN_FOLDERS.has(path.replace(/^\/+|\/+$/g, ''))
-}
+export { KNOWN_FOLDERS, isKnownFolder } from './taxonomy'
 
 export function getRelatedDocs(doc: Doc): Doc[] {
   if (!doc.frontmatter.related?.length) return []
