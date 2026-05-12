@@ -1,6 +1,7 @@
 import { Header } from '@/components/ui/Header'
 import { Sidebar } from '@/components/ui/Sidebar'
 import { MobileMenuProvider } from '@/components/ui/MobileMenuContext'
+import { SelectionToolbar } from '@/components/ask/SelectionToolbar'
 
 interface ChromeLayoutProps {
   children: React.ReactNode
@@ -18,6 +19,7 @@ export function ChromeLayout({ children }: ChromeLayoutProps) {
           </main>
         </div>
       </div>
+      <SelectionToolbar />
     </MobileMenuProvider>
   )
 }

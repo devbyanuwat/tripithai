@@ -1,5 +1,6 @@
 'use client'
-import { useState, useRef, useEffect } from 'react'
+import { Suspense, useState, useRef, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Send, AlertCircle, BookOpen, Loader2, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
@@ -22,25 +23,32 @@ const EXAMPLES = [
   'นิวรณ์ ๕ มีอะไรบ้าง',
 ]
 
-export default function AskPage() {
+function AskPageContent() {
+  const searchParams = useSearchParams()
+  const initialQuery = searchParams.get('q') ?? ''
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const prefilledRef = useRef(false)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  const ask = async (question: string) => {
-    if (!question.trim() || loading) return
+  const ask = useCallback(async (question: string) => {
+    if (!question.trim()) return
     setInput('')
     const userMsg: Message = { role: 'user', content: question }
-    setMessages((prev) => [...prev, userMsg])
+    let snapshot: Message[] = []
+    setMessages((prev) => {
+      snapshot = prev
+      return [...prev, userMsg]
+    })
     setLoading(true)
 
     try {
-      const history = messages.map((m) => ({ role: m.role, content: m.content }))
+      const history = snapshot.map((m) => ({ role: m.role, content: m.content }))
       const res = await fetch('/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -64,7 +72,14 @@ export default function AskPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  // Auto-fire question when navigated with ?q= (from SelectionToolbar etc.)
+  useEffect(() => {
+    if (!initialQuery || prefilledRef.current) return
+    prefilledRef.current = true
+    ask(initialQuery)
+  }, [initialQuery, ask])
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 flex flex-col h-[calc(100vh-56px)]">
@@ -190,5 +205,13 @@ export default function AskPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function AskPage() {
+  return (
+    <Suspense fallback={null}>
+      <AskPageContent />
+    </Suspense>
   )
 }
