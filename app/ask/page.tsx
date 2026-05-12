@@ -5,6 +5,7 @@ import { Send, AlertCircle, BookOpen, Loader2, MessageCircle } from 'lucide-reac
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { AnswerFeedback } from '@/components/ask/AnswerFeedback'
 import { cn } from '@/lib/utils'
 
 interface Message {
@@ -162,6 +163,15 @@ function AskPageContent() {
                       ))}
                     </div>
                   ) : null}
+
+                  {/* Feedback */}
+                  <AnswerFeedback
+                    question={messages[i - 1]?.role === 'user' ? messages[i - 1].content : ''}
+                    answer={msg.content}
+                    sources={msg.sources}
+                    fallback={msg.fallback}
+                    fallbackReason={msg.fallbackReason}
+                  />
                 </div>
               )}
             </div>
