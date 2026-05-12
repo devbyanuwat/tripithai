@@ -1,94 +1,114 @@
 'use client'
 
-import { Suspense, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import dynamic from 'next/dynamic'
 
-// Lazy chunk — never fetched on mobile or when user prefers reduced motion.
-const BodhiScene = dynamic(() => import('./BodhiScene').then((m) => m.BodhiScene), {
-  ssr: false,
-  loading: () => null,
-})
-
+/**
+ * Layered 2D parallax hero — no WebGL.
+ * Three depth layers that translate at different rates as the cursor moves:
+ *   - bg gradient + warm glow (far, slow)
+ *   - secondary glow ring   (mid)
+ *   - transparent tree PNG  (near, fastest)
+ * Mobile + reduced-motion fall back to a static composition.
+ */
 export function BodhiHero({ children }: { children: React.ReactNode }) {
-  // 3D Canvas is opt-in. Default to a static image so LCP fires fast and
-  // TBT stays near zero. Promote to WebGL only on desktop, after the
-  // browser is idle, and only when the user hasn't asked for reduced motion.
-  const [enable3D, setEnable3D] = useState(false)
-  const [sceneVisible, setSceneVisible] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLDivElement>(null)
+  const [mouse, setMouse] = useState({ x: 0, y: 0 })
+  const [enabled, setEnabled] = useState(false)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-
     const motionMQ = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const widthMQ = window.matchMedia('(min-width: 1024px)')
-    if (motionMQ.matches || !widthMQ.matches) return
-
-    type IdleHandle = number
-    const idle: (cb: () => void, opts?: { timeout: number }) => IdleHandle =
-      typeof window.requestIdleCallback === 'function'
-        ? (cb, opts) => window.requestIdleCallback(cb, opts)
-        : (cb) => window.setTimeout(cb, 1500)
-
-    const cancel = (id: IdleHandle) => {
-      if (typeof window.cancelIdleCallback === 'function') {
-        window.cancelIdleCallback(id)
-      } else {
-        window.clearTimeout(id)
-      }
-    }
-
-    // Wait for window load + idle, then mount the Canvas.
-    let handle: IdleHandle | null = null
-    const onReady = () => {
-      handle = idle(() => setEnable3D(true), { timeout: 3000 })
-    }
-    if (document.readyState === 'complete') {
-      onReady()
-    } else {
-      window.addEventListener('load', onReady, { once: true })
-    }
-
+    const widthMQ = window.matchMedia('(min-width: 768px)')
+    const update = () => setEnabled(!motionMQ.matches && widthMQ.matches)
+    update()
+    motionMQ.addEventListener('change', update)
+    widthMQ.addEventListener('change', update)
     return () => {
-      window.removeEventListener('load', onReady)
-      if (handle !== null) cancel(handle)
+      motionMQ.removeEventListener('change', update)
+      widthMQ.removeEventListener('change', update)
     }
   }, [])
 
-  // Cross-fade when scene becomes visible.
-  function onSceneCreated() {
-    requestAnimationFrame(() => setSceneVisible(true))
-  }
+  useEffect(() => {
+    if (!enabled) return
+    let raf = 0
+    function onMove(e: MouseEvent) {
+      if (!ref.current) return
+      const rect = ref.current.getBoundingClientRect()
+      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2
+      const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2
+      // Clamp; getBoundingClientRect can return negatives when off-element.
+      const cx = Math.max(-1, Math.min(1, x))
+      const cy = Math.max(-1, Math.min(1, y))
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => setMouse({ x: cx, y: cy }))
+    }
+    function onLeave() {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => setMouse({ x: 0, y: 0 }))
+    }
+    window.addEventListener('mousemove', onMove, { passive: true })
+    window.addEventListener('mouseleave', onLeave)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseleave', onLeave)
+    }
+  }, [enabled])
+
+  // Layer translation amounts (px). Background moves least, tree the most.
+  const t = enabled ? mouse : { x: 0, y: 0 }
+  const bg = `translate3d(${t.x * -6}px, ${t.y * -4}px, 0) scale(1.05)`
+  const glow = `translate3d(${t.x * -12}px, ${t.y * -8}px, 0)`
+  const tree = `translate3d(${t.x * 18}px, ${t.y * 10}px, 0) scale(1.02)`
 
   return (
     <div
-      ref={containerRef}
+      ref={ref}
       className="relative w-full overflow-hidden rounded-2xl border border-amber-100 shadow-sm"
       style={{ aspectRatio: '16 / 9' }}
     >
-      <Image
-        src="/hero/bodhi.webp"
-        alt="ต้นพระศรีมหาโพธิ์ — TripiThai"
-        fill
-        priority
-        fetchPriority="high"
-        sizes="(min-width: 1024px) 1024px, 100vw"
-        quality={85}
-        className="object-cover"
+      {/* Layer 1 — base gradient + breathing tint */}
+      <div
+        className="absolute inset-0 transition-transform duration-500 ease-out"
+        style={{
+          transform: bg,
+          background:
+            'linear-gradient(180deg, #fef9ef 0%, #fdf5dd 45%, #fbeec3 100%)',
+        }}
       />
-      {enable3D && (
-        <Suspense fallback={null}>
-          <div
-            className={`absolute inset-0 transition-opacity duration-700 ${
-              sceneVisible ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <BodhiScene onReady={onSceneCreated} />
-          </div>
-        </Suspense>
-      )}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-white/85 via-white/30 to-transparent" />
+
+      {/* Layer 2 — soft glow halo, mid depth */}
+      <div
+        className="pointer-events-none absolute inset-0 transition-transform duration-400 ease-out"
+        style={{
+          transform: glow,
+          background:
+            'radial-gradient(ellipse 70% 65% at 50% 35%, rgba(252, 211, 77, 0.45), rgba(252, 211, 77, 0) 65%)',
+        }}
+      />
+
+      {/* Layer 3 — tree foreground (transparent PNG) */}
+      <div
+        className="absolute inset-0 transition-transform duration-300 ease-out"
+        style={{ transform: tree }}
+      >
+        <Image
+          src="/hero/bodhi-tree.webp"
+          alt="ต้นพระศรีมหาโพธิ์ — TripiThai"
+          fill
+          priority
+          fetchPriority="high"
+          quality={90}
+          sizes="(min-width: 1024px) 1024px, 100vw"
+          className="object-contain object-bottom drop-shadow-sm"
+        />
+      </div>
+
+      {/* Bottom fade for readable hero text */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-white/85 via-white/35 to-transparent" />
+
       <div className="relative z-10 flex h-full items-end px-6 pb-8 sm:px-10 sm:pb-12">
         {children}
       </div>
