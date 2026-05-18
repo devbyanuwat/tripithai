@@ -8,6 +8,7 @@ import { BookOpen, Tag, ChevronRight, ExternalLink, Library } from 'lucide-react
 import { ListenButton } from '@/components/wiki/ListenButton'
 import { FolderIndex } from '@/components/wiki/FolderIndex'
 import { KappaTimeline } from '@/components/wiki/KappaTimeline'
+import { HellTimeline } from '@/components/wiki/HellTimeline'
 import { SITE_URL, SITE_NAME, OG_IMAGE, OG_IMAGE_WIDTH, OG_IMAGE_HEIGHT } from '@/lib/site'
 import type { Metadata } from 'next'
 
@@ -185,7 +186,7 @@ export default async function WikiPage({ params }: Props) {
             <MDXRemote
               source={doc.content}
               options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }}
-              components={{ KappaTimeline }}
+              components={{ KappaTimeline, HellTimeline }}
             />
           </div>
         </article>
