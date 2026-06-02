@@ -14,6 +14,8 @@ import { LeadSummary } from '@/components/wiki/LeadSummary'
 import { MoreContext } from '@/components/wiki/MoreContext'
 import { ScholarlyNote } from '@/components/wiki/ScholarlyNote'
 import { DisaSixDiagram } from '@/components/wiki/DisaSixDiagram'
+import { PhassaGap } from '@/components/wiki/PhassaGap'
+import { PabbajjaSpace } from '@/components/wiki/PabbajjaSpace'
 import { SITE_URL, SITE_NAME, OG_IMAGE, OG_IMAGE_WIDTH, OG_IMAGE_HEIGHT } from '@/lib/site'
 import type { Metadata } from 'next'
 
@@ -199,6 +201,8 @@ export default async function WikiPage({ params }: Props) {
                 MoreContext,
                 ScholarlyNote,
                 DisaSixDiagram,
+                PhassaGap,
+                PabbajjaSpace,
               }}
             />
           </div>
