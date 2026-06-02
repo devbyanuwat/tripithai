@@ -16,6 +16,7 @@ import { ScholarlyNote } from '@/components/wiki/ScholarlyNote'
 import { DisaSixDiagram } from '@/components/wiki/DisaSixDiagram'
 import { PhassaGap } from '@/components/wiki/PhassaGap'
 import { PabbajjaSpace } from '@/components/wiki/PabbajjaSpace'
+import { AsappurisaContrast } from '@/components/wiki/AsappurisaContrast'
 import { SITE_URL, SITE_NAME, OG_IMAGE, OG_IMAGE_WIDTH, OG_IMAGE_HEIGHT } from '@/lib/site'
 import type { Metadata } from 'next'
 
@@ -203,6 +204,7 @@ export default async function WikiPage({ params }: Props) {
                 DisaSixDiagram,
                 PhassaGap,
                 PabbajjaSpace,
+                AsappurisaContrast,
               }}
             />
           </div>
