@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Sarabun } from 'next/font/google'
 import './globals.css'
 import { AppLayout } from '@/components/layouts'
+import { Analytics } from '@vercel/analytics/next'
 
 const sarabun = Sarabun({
   subsets: ['thai', 'latin'],
@@ -115,6 +116,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         <AppLayout>{children}</AppLayout>
+        <Analytics />
       </body>
     </html>
   )
