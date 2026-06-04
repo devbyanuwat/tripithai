@@ -21,6 +21,7 @@ import { ChantStanza } from '@/components/wiki/ChantStanza'
 import { PaticcaWheel } from '@/components/wiki/PaticcaWheel'
 import { KamabhogiMatrix } from '@/components/wiki/KamabhogiMatrix'
 import { AriyaLadder } from '@/components/wiki/AriyaLadder'
+import { VinnanaStream } from '@/components/wiki/VinnanaStream'
 import { SITE_URL, SITE_NAME, OG_IMAGE, OG_IMAGE_WIDTH, OG_IMAGE_HEIGHT } from '@/lib/site'
 import type { Metadata } from 'next'
 
@@ -213,6 +214,7 @@ export default async function WikiPage({ params }: Props) {
                 PaticcaWheel,
                 KamabhogiMatrix,
                 AriyaLadder,
+                VinnanaStream,
               }}
             />
           </div>
