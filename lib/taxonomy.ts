@@ -57,6 +57,10 @@ export const TIPITAKA_TAXONOMY: Record<string, TaxonomyNode> = {
       patthana: { label: 'ปัฏฐาน' },
     },
   },
+  // บทสวด — ไม่ใช่ปิฎกใน ๔๕ เล่ม แต่จัดเป็นหมวดแยกเพื่อรวมบทสวดที่อิงพระสูตร
+  chants: {
+    label: 'บทสวด',
+  },
 }
 
 const _knownFolders = new Set<string>()

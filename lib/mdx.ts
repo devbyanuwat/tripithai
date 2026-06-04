@@ -14,6 +14,7 @@ export interface DocFrontmatter {
   description?: string
   etipitaka?: string    // override URL ตรงไปที่ etipitaka.com (ถ้าไม่ใส่ จะ derive จาก ref)
   watnapp?: string      // URL ไปยังหนังสือพุทธวจน บน watnapp.com
+  chantUses?: string[]  // หมวดการใช้บทสวด เช่น ทำวัตรเช้า/ทำวัตรเย็น/ปริตร/แผ่เมตตา (สำหรับ filter ใน /chants)
 }
 
 export interface Doc {
