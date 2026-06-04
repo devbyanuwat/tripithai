@@ -1,3 +1,5 @@
+import { Check } from 'lucide-react'
+
 type Rung = {
   level: string
   cut: string
@@ -73,8 +75,8 @@ export function AriyaLadder() {
                   <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
                     {SOTAPANNA_CHECK.map((c) => (
                       <span key={c} className="flex items-center gap-2 text-sm text-stone-700">
-                        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded border border-emerald-400 text-[10px] text-emerald-600">
-                          ✓
+                        <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded border border-emerald-400 text-emerald-600">
+                          <Check className="h-3 w-3" />
                         </span>
                         {c}
                       </span>

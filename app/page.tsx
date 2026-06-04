@@ -13,13 +13,13 @@ const FEATURED = [
 ]
 
 const NIKAYA = [
-  { name: 'พระวินัยปิฎก', slug: 'vinaya', count: '3 ปิฎก', color: 'bg-amber-50 border-amber-200 text-amber-800' },
-  { name: 'ทีฆนิกาย', slug: 'suttanta/digha', count: '34 สูตร', color: 'bg-sky-50 border-sky-200 text-sky-800' },
-  { name: 'มัชฌิมนิกาย', slug: 'suttanta/majjhima', count: '152 สูตร', color: 'bg-sky-50 border-sky-200 text-sky-800' },
-  { name: 'สังยุตตนิกาย', slug: 'suttanta/samyutta', count: '56 สังยุต', color: 'bg-sky-50 border-sky-200 text-sky-800' },
-  { name: 'อังคุตตรนิกาย', slug: 'suttanta/anguttara', count: '11 นิบาต', color: 'bg-sky-50 border-sky-200 text-sky-800' },
-  { name: 'ขุททกนิกาย', slug: 'suttanta/khuddaka', count: '15 คัมภีร์', color: 'bg-sky-50 border-sky-200 text-sky-800' },
-  { name: 'พระอภิธรรมปิฎก', slug: 'abhidhamma', count: '7 คัมภีร์', color: 'bg-emerald-50 border-emerald-200 text-emerald-800' },
+  { name: 'พระวินัยปิฎก', slug: 'vinaya', count: '3 หมวด' },
+  { name: 'ทีฆนิกาย', slug: 'suttanta/digha', count: '34 สูตร' },
+  { name: 'มัชฌิมนิกาย', slug: 'suttanta/majjhima', count: '152 สูตร' },
+  { name: 'สังยุตตนิกาย', slug: 'suttanta/samyutta', count: '56 สังยุต' },
+  { name: 'อังคุตตรนิกาย', slug: 'suttanta/anguttara', count: '11 นิบาต' },
+  { name: 'ขุททกนิกาย', slug: 'suttanta/khuddaka', count: '15 คัมภีร์' },
+  { name: 'พระอภิธรรมปิฎก', slug: 'abhidhamma', count: '7 คัมภีร์' },
 ]
 
 export default function Home() {
@@ -42,7 +42,7 @@ export default function Home() {
       </BodhiHero>
 
       {/* Feature cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Link href="/search" className="group flex flex-col items-center gap-3 p-5 bg-white border border-stone-200 rounded-xl hover:border-amber-300 hover:shadow-sm transition-all">
           <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center">
             <Search className="w-5 h-5 text-amber-600" />
@@ -75,7 +75,7 @@ export default function Home() {
       {/* Featured topics */}
       <div>
         <h2 className="text-sm font-semibold text-stone-400 uppercase tracking-wide mb-4">หัวข้อแนะนำ</h2>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {FEATURED.map((item) => (
             <Link
               key={item.slug}
@@ -100,7 +100,7 @@ export default function Home() {
             <Link
               key={n.slug}
               href={`/wiki/${n.slug}`}
-              className={`flex items-center gap-2 px-4 py-2 border rounded-full text-sm font-medium hover:shadow-sm transition-all ${n.color}`}
+              className="flex items-center gap-2 px-4 py-2 border border-amber-200 bg-amber-50/60 text-amber-800 rounded-full text-sm font-medium hover:border-amber-300 hover:bg-amber-50 transition-all"
             >
               {n.name}
               <span className="opacity-60 text-xs">{n.count}</span>

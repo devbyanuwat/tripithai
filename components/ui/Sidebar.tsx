@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Search, MessageCircle, Home, ChevronDown, X } from 'lucide-react'
+import { Search, MessageCircle, Home, ChevronDown, X, Flower2 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useMobileMenu } from '@/components/ui/MobileMenuContext'
 import { cn } from '@/lib/utils'
@@ -156,7 +156,9 @@ export function Sidebar({ tree }: { tree: NavNode[] }) {
         {/* Logo */}
         <div className="flex items-center justify-between border-b border-stone-100 px-4 py-4">
           <Link href="/" className="flex items-center gap-2" onClick={handleNavigate}>
-            <span className="text-2xl">🪷</span>
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50">
+              <Flower2 className="h-5 w-5 text-amber-600" />
+            </span>
             <div>
               <p className="font-semibold text-stone-800 text-sm">TripiThai</p>
               <p className="text-xs text-stone-400">พระไตรปิฎกภาษาไทย</p>
