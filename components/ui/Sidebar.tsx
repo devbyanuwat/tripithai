@@ -2,9 +2,10 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Search, MessageCircle, Home, ChevronDown, X } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useMobileMenu } from '@/components/ui/MobileMenuContext'
 import { cn } from '@/lib/utils'
+import type { NavNode } from '@/lib/nav'
 
 const NAV = [
   { href: '/', icon: Home, label: 'หน้าแรก' },
@@ -12,81 +13,121 @@ const NAV = [
   { href: '/ask', icon: MessageCircle, label: 'ถาม AI' },
 ]
 
-const WIKI_TREE = [
-  {
-    label: 'พระวินัยปิฎก',
-    href: '/wiki/vinaya',
-    children: [
-      { label: 'มหาวิภังค์', href: '/wiki/vinaya/mahavibhanga' },
-      { label: 'ภิกขุนีวิภังค์', href: '/wiki/vinaya/bhikkhunivibhanga' },
-      { label: 'ขันธกะ', href: '/wiki/vinaya/khandhaka' },
-    ],
-  },
-  {
-    label: 'พระสุตตันตปิฎก',
-    href: '/wiki/suttanta',
-    children: [
-      { label: 'ทีฆนิกาย', href: '/wiki/suttanta/digha' },
-      { label: 'มัชฌิมนิกาย', href: '/wiki/suttanta/majjhima' },
-      { label: 'สังยุตตนิกาย', href: '/wiki/suttanta/samyutta' },
-      { label: 'อังคุตตรนิกาย', href: '/wiki/suttanta/anguttara' },
-      { label: 'ขุททกนิกาย', href: '/wiki/suttanta/khuddaka' },
-    ],
-  },
-  {
-    label: 'พระอภิธรรมปิฎก',
-    href: '/wiki/abhidhamma',
-    children: [
-      { label: 'ธัมมสังคณี', href: '/wiki/abhidhamma/dhammasangani' },
-      { label: 'วิภังค์', href: '/wiki/abhidhamma/vibhanga' },
-      { label: 'ธาตุกถา', href: '/wiki/abhidhamma/dhatukatha' },
-    ],
-  },
-]
+function NavBranch({
+  node,
+  depth,
+  openSet,
+  toggle,
+  pathname,
+  onNavigate,
+}: {
+  node: NavNode
+  depth: number
+  openSet: Set<string>
+  toggle: (href: string) => void
+  pathname: string
+  onNavigate: () => void
+}) {
+  if (node.children?.length) {
+    const isOpen = openSet.has(node.href)
+    const headClass =
+      depth === 0
+        ? 'w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-stone-500 hover:text-stone-700'
+        : 'w-full flex items-center justify-between px-3 py-1.5 text-sm font-medium text-stone-600 hover:text-stone-800'
+    return (
+      <div>
+        <button onClick={() => toggle(node.href)} className={headClass}>
+          <span className="text-left">{node.label}</span>
+          <ChevronDown className={cn('w-3 h-3 shrink-0 transition-transform', isOpen && 'rotate-180')} />
+        </button>
+        {isOpen && (
+          <div className={cn('space-y-0.5', depth === 0 ? 'ml-2' : 'ml-3 border-l border-stone-100 pl-1')}>
+            {node.children.map((child) => (
+              <NavBranch
+                key={child.href}
+                node={child}
+                depth={depth + 1}
+                openSet={openSet}
+                toggle={toggle}
+                pathname={pathname}
+                onNavigate={onNavigate}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
 
-function WikiTree({ onNavigate }: { onNavigate: () => void }) {
-  const [open, setOpen] = useState<string | null>('พระสุตตันตปิฎก')
+  return (
+    <Link
+      href={node.href}
+      onClick={onNavigate}
+      className={cn(
+        'block px-3 py-1.5 rounded-md text-sm transition-colors',
+        pathname === node.href
+          ? 'bg-amber-100 text-amber-800 font-medium'
+          : 'text-stone-600 hover:bg-stone-100 hover:text-stone-800',
+      )}
+    >
+      {node.label}
+    </Link>
+  )
+}
+
+// hrefs ของโฟลเดอร์บรรพบุรุษของ path ปัจจุบัน (ไม่รวม leaf) เพื่อกางเมนูให้เห็นบทที่เปิดอยู่
+function ancestorsOf(pathname: string): string[] {
+  const parts = pathname.split('/').filter(Boolean)
+  if (parts[0] !== 'wiki') return []
+  const acc: string[] = []
+  let cur = '/wiki'
+  for (let i = 1; i < parts.length - 1; i++) {
+    cur += '/' + parts[i]
+    acc.push(cur)
+  }
+  return acc
+}
+
+function WikiTree({ tree, onNavigate }: { tree: NavNode[]; onNavigate: () => void }) {
   const pathname = usePathname()
+  const [openSet, setOpenSet] = useState<Set<string>>(
+    () => new Set<string>(['/wiki/suttanta', ...ancestorsOf(pathname)]),
+  )
+
+  useEffect(() => {
+    setOpenSet((prev) => {
+      const next = new Set(prev)
+      ancestorsOf(pathname).forEach((h) => next.add(h))
+      return next
+    })
+  }, [pathname])
+
+  const toggle = (href: string) =>
+    setOpenSet((prev) => {
+      const next = new Set(prev)
+      if (next.has(href)) next.delete(href)
+      else next.add(href)
+      return next
+    })
 
   return (
     <div className="space-y-0.5">
-      {WIKI_TREE.map((section) => (
-        <div key={section.label}>
-          <button
-            onClick={() => setOpen(open === section.label ? null : section.label)}
-            className="w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-stone-500 hover:text-stone-700 uppercase tracking-wide"
-          >
-            {section.label}
-            <ChevronDown
-              className={cn('w-3 h-3 transition-transform', open === section.label && 'rotate-180')}
-            />
-          </button>
-          {open === section.label && (
-            <div className="ml-2 space-y-0.5">
-              {section.children.map((child) => (
-                <Link
-                  key={child.href}
-                  href={child.href}
-                  onClick={onNavigate}
-                  className={cn(
-                    'block px-3 py-1.5 rounded-md text-sm transition-colors',
-                    pathname === child.href
-                      ? 'bg-amber-100 text-amber-800 font-medium'
-                      : 'text-stone-600 hover:bg-stone-100 hover:text-stone-800'
-                  )}
-                >
-                  {child.label}
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
+      {tree.map((node) => (
+        <NavBranch
+          key={node.href}
+          node={node}
+          depth={0}
+          openSet={openSet}
+          toggle={toggle}
+          pathname={pathname}
+          onNavigate={onNavigate}
+        />
       ))}
     </div>
   )
 }
 
-export function Sidebar() {
+export function Sidebar({ tree }: { tree: NavNode[] }) {
   const pathname = usePathname()
   const { isOpen, setOpen } = useMobileMenu()
 
@@ -157,7 +198,7 @@ export function Sidebar() {
 
         {/* Wiki tree */}
         <div className="px-2 py-2 flex-1">
-          <WikiTree onNavigate={handleNavigate} />
+          <WikiTree tree={tree} onNavigate={handleNavigate} />
         </div>
 
         {/* Footer */}

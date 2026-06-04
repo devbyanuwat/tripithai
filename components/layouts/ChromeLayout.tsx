@@ -2,16 +2,18 @@ import { Header } from '@/components/ui/Header'
 import { Sidebar } from '@/components/ui/Sidebar'
 import { MobileMenuProvider } from '@/components/ui/MobileMenuContext'
 import { SelectionToolbar } from '@/components/ask/SelectionToolbar'
+import { buildWikiTree } from '@/lib/nav'
 
 interface ChromeLayoutProps {
   children: React.ReactNode
 }
 
 export function ChromeLayout({ children }: ChromeLayoutProps) {
+  const tree = buildWikiTree()
   return (
     <MobileMenuProvider>
       <div className="flex min-h-screen">
-        <Sidebar />
+        <Sidebar tree={tree} />
         <div className="flex min-w-0 flex-1 flex-col">
           <Header />
           <main className="flex-1 animate-fade-in">
