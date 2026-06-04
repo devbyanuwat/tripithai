@@ -25,25 +25,21 @@ export function ChantStanza({
         </span>
       )}
 
-      {/* ชั้นบาลี (อักษรไทย) */}
-      <div className="mb-2">
-        <span className="text-[10px] uppercase tracking-[0.18em] text-amber-700/70">บาลี</span>
-        {hasPali ? (
+      {/* ชั้นบาลี pinthu (แสดงเมื่อมี) */}
+      {hasPali && (
+        <div className="mb-2">
+          <span className="text-[10px] uppercase tracking-[0.18em] text-amber-700/70">บาลี</span>
           <p className="mt-0.5 text-lg font-medium leading-relaxed text-stone-800">{pali}</p>
-        ) : (
-          <p className="mt-0.5 text-sm italic text-stone-400">รอเพิ่มต้นฉบับบาลีจากแหล่งอ้างอิง</p>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* ชั้นคำอ่าน */}
-      <div className="mb-2">
-        <span className="text-[10px] uppercase tracking-[0.18em] text-stone-400">คำอ่าน</span>
-        {hasRead ? (
-          <p className="mt-0.5 text-sm leading-relaxed text-stone-500">{read}</p>
-        ) : (
-          <p className="mt-0.5 text-sm italic text-stone-300">รอเพิ่มคำอ่าน</p>
-        )}
-      </div>
+      {/* ชั้นคำอ่าน (แสดงเมื่อมี) */}
+      {hasRead && (
+        <div className="mb-2">
+          <span className="text-[10px] uppercase tracking-[0.18em] text-amber-700/70">คำอ่าน</span>
+          <p className="mt-0.5 text-base font-medium leading-relaxed text-stone-800">{read}</p>
+        </div>
+      )}
 
       {/* ชั้นคำแปล */}
       {meaning && (
